@@ -1,0 +1,35 @@
+<h1 class="display-5">Games for today <%=dateToday%></h1>
+
+<table class="table table-hover table-striped">
+    <thead>
+        <tr>
+            <th scope="col">Game ID</th>
+            <th scope="col">Schedule</th>
+            <th scope="col">Score(1)</th>
+            <th scope="col">Team 1(Away)</th>
+            <th scope="col">Score(2)</th>
+            <th scope="col">Team 2(Home)</th>
+
+            <th scope="col">Game Status</th>
+            <th scope="col">Winner</th>
+        </tr>
+    </thead>
+    <tbody>
+        <%gamesToday.forEach((game) => {%>
+        <tr>
+            <th scope="row"><%=game.gameId%></th>
+            <td><%=game.startTimeUTC%></td>
+            <td><%=Object.values(game.team1.score)%></td>
+            <td class="text-left"><img class="teamLogoForTable mr-2" src=<%=game.team1.logo%> />
+                <%=game.team1.fullName%>
+            </td>
+            <td><%=Object.values(game.team2.score)%></td>
+            <td class="text-left"><img class="teamLogoForTable mr-2" src=<%=game.team2.logo%> /><%=game.team2.fullName%>
+            </td>
+
+            <td><%=game.gameStatus%></td>
+            <td><%=game.winner%></td>
+        </tr>
+        <%});%>
+    </tbody>
+</table>
