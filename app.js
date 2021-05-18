@@ -61,25 +61,6 @@ function existanceChecker(games) {
   }
 }
 
-//SPORTSPAGE-FEEDS
-// const options = {
-//   method: "GET",
-//   url: "https://sportspage-feeds.p.rapidapi.com/games",
-//   headers: {
-//     "x-rapidapi-key": process.env.X_RAPIDAPI_SPORTSPAGE_KEY,
-//     "x-rapidapi-host": "sportspage-feeds.p.rapidapi.com",
-//   },
-// };
-
-// axios
-//   .request(options)
-//   .then(function (response) {
-//     console.log(response.data);
-//   })
-//   .catch(function (error) {
-//     console.error(error);
-//   });
-
 app.use(express.static("public"));
 app.use(favicon(path.join(__dirname, "public", "img/favicon.png")));
 app.set("view engine", "ejs");
@@ -215,13 +196,13 @@ Game.find({ date: currentDayPlusOneDay }, function (err, foundGames) {
           );
           gamesArrayTomorrow.push(game);
         });
-        // console.log(
-        //   "Developers Note: THE FOLLOWING DATA COMES FROM gamesArrayTomorrow, THIS WILL SHOW TOMORROWS GAMES:"
-        // );
-        // console.log(gamesArrayTomorrow); //Log to see arranged Game Data
-        // console.log(
-        //   "Number of Games for Tomorrow: " + gamesArrayTomorrow.length
-        // );
+        console.log(
+          "Developers Note: THE FOLLOWING DATA COMES FROM gamesArrayTomorrow, THIS WILL SHOW TOMORROWS GAMES:"
+        );
+        console.log(gamesArrayTomorrow); //Log to see arranged Game Data
+        console.log(
+          "Number of Games for Tomorrow: " + gamesArrayTomorrow.length
+        );
       }
       console.log("isApproved: " + isApproved);
       console.log("isExisted: " + isExisted);
@@ -275,58 +256,63 @@ if (gamesArrayTomorrow === null) {
     } else {
       if (foundGames) {
         const [game] = foundGames;
-        const { _id, date, gameDetails } = game;
-        const gamesObject = JSON.parse(gameDetails);
-        const gamesEntries = Object.entries(gamesObject.api.games);
-        function GameDestructuredData(
-          gameId,
-          startTimeUTC,
-          gameStatus,
-          team1,
-          team2,
-          winner
-        ) {
-          this.gameId = gameId;
-          this.startTimeUTC = moment(startTimeUTC).format(
-            "MMMM Do YYYY, h:mm:ss a"
-          );
-          this.gameStatus = gameStatus;
-          this.team1 = team1;
-          this.team2 = team2;
-          this.winner = winner;
-        }
-        gamesEntries.forEach((items) => {
-          const [item1, item2] = items;
-          const { gameId, startTimeUTC, statusGame, vTeam, hTeam } = item2;
-
-          let awayTeam = parseInt(Object.values(vTeam.score));
-          let homeTeam = parseInt(Object.values(hTeam.score));
-
-          // Checks Winner
-          let winner;
-          if (awayTeam > homeTeam) {
-            winner = "Team 1";
-          }
-
-          if (awayTeam < homeTeam) {
-            winner = "Team 2";
-          }
-
-          let game = new GameDestructuredData(
+        if (game === undefined) {
+          console.log("Game is empty");
+        } else {
+          const { _id, date, gameDetails } = game;
+          const gamesObject = JSON.parse(gameDetails);
+          const gamesEntries = Object.entries(gamesObject.api.games);
+          function GameDestructuredData(
             gameId,
             startTimeUTC,
-            statusGame,
-            vTeam,
-            hTeam,
+            gameStatus,
+            team1,
+            team2,
             winner
-          );
-          gamesArrayTomorrow.push(game);
-        });
-        // console.log(
-        //   "Developers Note: THE FOLLOWING DATA COMES FROM gamesArrayTomorrow, THIS WILL SHOW TOMORROWS GAMES:"
-        // );
-        // console.log(gamesArrayTomorrow); //Log to see arranged Game Data
-        // console.log("Number of Games for Today: " + gamesArrayTomorrow.length);
+          ) {
+            this.gameId = gameId;
+            this.startTimeUTC = moment(startTimeUTC).format(
+              "MMMM Do YYYY, h:mm:ss a"
+            );
+            this.gameStatus = gameStatus;
+            this.team1 = team1;
+            this.team2 = team2;
+            this.winner = winner;
+          }
+          gamesEntries.forEach((items) => {
+            const [item1, item2] = items;
+            const { gameId, startTimeUTC, statusGame, vTeam, hTeam } = item2;
+
+            let awayTeam = parseInt(Object.values(vTeam.score));
+            let homeTeam = parseInt(Object.values(hTeam.score));
+
+            // Checks Winner
+            let winner;
+            if (awayTeam > homeTeam) {
+              winner = "Team 1";
+            }
+
+            if (awayTeam < homeTeam) {
+              winner = "Team 2";
+            }
+
+            let game = new GameDestructuredData(
+              gameId,
+              startTimeUTC,
+              statusGame,
+              vTeam,
+              hTeam,
+              winner
+            );
+            gamesArrayTomorrow.push(game);
+          });
+        }
+
+        console.log(
+          "Developers Note: THE FOLLOWING DATA COMES FROM gamesArrayTomorrow, THIS WILL SHOW TOMORROWS GAMES:"
+        );
+        console.log(gamesArrayTomorrow); //Log to see arranged Game Data
+        console.log("Number of Games for Today: " + gamesArrayTomorrow.length);
       }
     }
   });
@@ -346,7 +332,7 @@ const gameUpdate = {
 
 //END NBA-API
 
-//ODDS-API
+// //ODDS-API
 
 const api_key = process.env.ODDS_API;
 
@@ -409,7 +395,7 @@ Game.find({ date: currentYearMonthDay }, function (err, data) {
   }
 });
 
-//END OF ODDS-API
+// END OF ODDS-API
 
 //GET GAMES FOR TODAY FROM DB AND STORE IN ARRAY gamesArrayToday
 let gamesArrayToday = [];
@@ -419,59 +405,64 @@ Game.find({ date: currentYearMonthDay }, function (err, foundGames) {
   } else {
     if (foundGames) {
       const [game] = foundGames;
-      const { _id, date, gameDetails } = game;
-      const gamesObject = JSON.parse(gameDetails);
-      const gamesEntries = Object.entries(gamesObject.api.games);
-      function GameDestructuredData(
-        gameId,
-        startTimeUTC,
-        gameStatus,
-        team1,
-        oddsAway,
-        team2,
-        oddsHome,
-        winner
-      ) {
-        this.gameId = gameId;
-        this.startTimeUTC = moment(startTimeUTC).format(
-          "MMMM Do YYYY, h:mm:ss a"
-        );
-        this.gameStatus = gameStatus;
-        this.team1 = team1;
-        this.oddsAway = oddsAway;
-        this.team2 = team2;
-        this.oddsHome = oddsHome;
-        this.winner = winner;
-      }
-      gamesEntries.forEach((items) => {
-        const [item1, item2] = items;
-        const { gameId, startTimeUTC, statusGame, vTeam, hTeam } = item2;
-
-        let awayTeam = parseInt(Object.values(vTeam.score));
-        let homeTeam = parseInt(Object.values(hTeam.score));
-
-        // Checks Winner
-        let winner;
-        if (awayTeam > homeTeam) {
-          winner = "Team 1";
-        }
-
-        if (awayTeam < homeTeam) {
-          winner = "Team 2";
-        }
-
-        let game = new GameDestructuredData(
+      if (game === undefined) {
+        console.log("Game is empty");
+      } else {
+        const { _id, date, gameDetails } = game;
+        const gamesObject = JSON.parse(gameDetails);
+        const gamesEntries = Object.entries(gamesObject.api.games);
+        function GameDestructuredData(
           gameId,
           startTimeUTC,
-          statusGame,
-          vTeam,
-          "",
-          hTeam,
-          "",
+          gameStatus,
+          team1,
+          oddsAway,
+          team2,
+          oddsHome,
           winner
-        );
-        gamesArrayToday.push(game);
-      });
+        ) {
+          this.gameId = gameId;
+          this.startTimeUTC = moment(startTimeUTC).format(
+            "MMMM Do YYYY, h:mm:ss a"
+          );
+          this.gameStatus = gameStatus;
+          this.team1 = team1;
+          this.oddsAway = oddsAway;
+          this.team2 = team2;
+          this.oddsHome = oddsHome;
+          this.winner = winner;
+        }
+        gamesEntries.forEach((items) => {
+          const [item1, item2] = items;
+          const { gameId, startTimeUTC, statusGame, vTeam, hTeam } = item2;
+
+          let awayTeam = parseInt(Object.values(vTeam.score));
+          let homeTeam = parseInt(Object.values(hTeam.score));
+
+          // Checks Winner
+          let winner;
+          if (awayTeam > homeTeam) {
+            winner = "Team 1";
+          }
+
+          if (awayTeam < homeTeam) {
+            winner = "Team 2";
+          }
+
+          let game = new GameDestructuredData(
+            gameId,
+            startTimeUTC,
+            statusGame,
+            vTeam,
+            "",
+            hTeam,
+            "",
+            winner
+          );
+          gamesArrayToday.push(game);
+        });
+      }
+
       console.log(
         "Developers Note: THE FOLLOWING DATA COMES FROM gamesArrayToday THIS WILL SHOW TODAYS GAMES:"
       );
@@ -490,45 +481,48 @@ Game.find({ date: currentYearMonthDay }, function (err, foundGames) {
     if (foundGames) {
       const [game] = foundGames;
       const { listOfGames } = game;
-      const listOfGamesJSON = JSON.parse(listOfGames);
-      function GameOdds(homeTeam, awayOdds, homeOdds) {
-        this.homeTeam = homeTeam;
-        this.awayOdds = awayOdds;
-        this.homeOdds = homeOdds;
+      if (listOfGames === "") {
+        console.log("listOfGames empty");
+      } else {
+        const listOfGamesJSON = JSON.parse(listOfGames);
+        function GameOdds(homeTeam, awayOdds, homeOdds) {
+          this.homeTeam = homeTeam;
+          this.awayOdds = awayOdds;
+          this.homeOdds = homeOdds;
+        }
+        listOfGamesJSON.forEach((item) => {
+          console.log(item);
+          item.sites.map((items) => {
+            if (items.site_key === "williamhill_us") {
+              let extractedOdds = new GameOdds(
+                item.home_team,
+                items.odds.h2h[0],
+                items.odds.h2h[1]
+              );
+              oddsToday.push(extractedOdds);
+            }
+          });
+        });
+        console.log(oddsToday);
+        // THIS AREA IS STILL UNDERCONSTRUCTION
+        //Merging of Odds for today and Games for today
+        oddsToday.map((item) => {
+          // console.log("From Odds: " + item.homeTeam);
+          gamesArrayToday.map((items) => {
+            const { team2 } = items;
+            const { fullName } = team2;
+            // console.log("From Games: " + fullName);
+            if (item.homeTeam === fullName) {
+              // Problem with spelling (looking for a way to merge without conflicts)
+            }
+          });
+        });
       }
-      listOfGamesJSON.forEach((item) => {
-        console.log(item);
-        item.sites.map((items) => {
-          if (items.site_key === "williamhill_us") {
-            let extractedOdds = new GameOdds(
-              item.home_team,
-              items.odds.h2h[0],
-              items.odds.h2h[1]
-            );
-            oddsToday.push(extractedOdds);
-          }
-        });
-      });
-      console.log(oddsToday);
-
-      // THIS AREA IS STILL UNDERCONSTRUCTION
-      //Merging of Odds for today and Games for today
-      oddsToday.map((item) => {
-        // console.log("From Odds: " + item.homeTeam);
-        gamesArrayToday.map((items) => {
-          const { team2 } = items;
-          const { fullName } = team2;
-          // console.log("From Games: " + fullName);
-          if (item.homeTeam === fullName) {
-            // Problem with spelling (looking for a way to merge without conflicts)
-          }
-        });
-      });
     }
   }
 });
 
-//GET GAMES FOR YESTERDAY FROM DB AND STORE IN ARRAY gamesArrayYesterday
+// GET GAMES FOR YESTERDAY FROM DB AND STORE IN ARRAY gamesArrayYesterday
 let gamesArrayYesterday = [];
 Game.find({ date: currentYearMonthDayMinusOneDay }, function (err, foundGames) {
   if (err) {
@@ -536,60 +530,61 @@ Game.find({ date: currentYearMonthDayMinusOneDay }, function (err, foundGames) {
   } else {
     if (foundGames) {
       const [game] = foundGames;
-      const { _id, date, gameDetails } = game;
-      const gamesObject = JSON.parse(gameDetails);
-      const gamesEntries = Object.entries(gamesObject.api.games);
-      function GameDestructuredData(
-        gameId,
-        startTimeUTC,
-        gameStatus,
-        team1,
-        team2,
-        winner
-      ) {
-        this.gameId = gameId;
-        this.startTimeUTC = moment(startTimeUTC).format(
-          "MMMM Do YYYY, h:mm:ss a"
-        );
-        this.gameStatus = gameStatus;
-        this.team1 = team1;
-        this.team2 = team2;
-        this.winner = winner;
-      }
-      gamesEntries.forEach((items) => {
-        const [item1, item2] = items;
-        const { gameId, startTimeUTC, statusGame, vTeam, hTeam } = item2;
-
-        let awayTeam = parseInt(Object.values(vTeam.score));
-        let homeTeam = parseInt(Object.values(hTeam.score));
-
-        // Checks Winner
-        let winner;
-        if (awayTeam > homeTeam) {
-          winner = "Team 1";
-        }
-
-        if (awayTeam < homeTeam) {
-          winner = "Team 2";
-        }
-
-        let game = new GameDestructuredData(
+      if (game === undefined) {
+        console.log("Game is empty");
+      } else {
+        const { _id, date, gameDetails } = game;
+        const gamesObject = gameDetails;
+        const gamesEntries = Object.entries(gamesObject.api.games);
+        function GameDestructuredData(
           gameId,
           startTimeUTC,
-          statusGame,
-          vTeam,
-          hTeam,
+          gameStatus,
+          team1,
+          team2,
           winner
-        );
-        gamesArrayYesterday.push(game);
-      });
-      // console.log(
-      //   "Developers Note: THE FOLLOWING DATA COMES FROM gamesArrayYesterday, THIS WILL SHOW YESTERDAYS GAMES:"
-      // );
-      // console.log(gamesArrayYesterday); //Log to see arranged Game Data
-      // console.log(
-      //   "Number of Games for Yesterday: " + gamesArrayYesterday.length
-      // );
+        ) {
+          this.gameId = gameId;
+          this.startTimeUTC = moment(startTimeUTC).format(
+            "MMMM Do YYYY, h:mm:ss a"
+          );
+          this.gameStatus = gameStatus;
+          this.team1 = team1;
+          this.team2 = team2;
+          this.winner = winner;
+        }
+        gamesEntries.forEach((items) => {
+          const [item1, item2] = items;
+          const { gameId, startTimeUTC, statusGame, vTeam, hTeam } = item2;
+          let awayTeam = parseInt(Object.values(vTeam.score));
+          let homeTeam = parseInt(Object.values(hTeam.score));
+          // Checks Winner
+          let winner;
+          if (awayTeam > homeTeam) {
+            winner = "Team 1";
+          }
+          if (awayTeam < homeTeam) {
+            winner = "Team 2";
+          }
+          let game = new GameDestructuredData(
+            gameId,
+            startTimeUTC,
+            statusGame,
+            vTeam,
+            hTeam,
+            winner
+          );
+          gamesArrayYesterday.push(game);
+        });
+      }
+
+      console.log(
+        "Developers Note: THE FOLLOWING DATA COMES FROM gamesArrayYesterday, THIS WILL SHOW YESTERDAYS GAMES:"
+      );
+      console.log(gamesArrayYesterday); //Log to see arranged Game Data
+      console.log(
+        "Number of Games for Yesterday: " + gamesArrayYesterday.length
+      );
     }
   }
 });
@@ -689,18 +684,19 @@ app.get(
   }
 );
 
-app.get(
-  "/auth/facebook",
-  passport.authenticate("facebook", { scope: ["email"] })
-);
+// FACEBOOK AUTH CURRENTLY NOT WORKING
+// app.get(
+//   "/auth/facebook",
+//   passport.authenticate("facebook", { scope: ["email"] })
+// );
 
-app.get(
-  "/auth/facebook/user",
-  passport.authenticate("facebook", { failureRedirect: "/login" }),
-  function (req, res) {
-    res.redirect("/user");
-  }
-);
+// app.get(
+//   "/auth/facebook/user",
+//   passport.authenticate("facebook", { failureRedirect: "/login" }),
+//   function (req, res) {
+//     res.redirect("/user");
+//   }
+// );
 
 app.get("/login", (req, res) => {
   res.render("login");
@@ -944,3 +940,45 @@ if (port == null || port == "") {
 app.listen(port, () => {
   console.log("Server started! on " + port);
 });
+
+// IF undefined remedy (OPTIONAL CODE)
+// function refetch(dateToRefetch) {
+//   const options = {
+//     method: "GET",
+//     url: "https://api-nba-v1.p.rapidapi.com/games/date/" + dateToRefetch,
+//     headers: {
+//       "x-rapidapi-key": process.env.X_RAPIDAPI_NBA_API_KEY,
+//       "x-rapidapi-host": "api-nba-v1.p.rapidapi.com",
+//     },
+//   };
+
+//   axios
+//     .request(options)
+//     .then(function (response) {
+//       console.log(
+//         "Developers Note: THE FOLLOWING DATA COMES NBA-API, THIS WILL REFRESH DATABASE DATA " +
+//           dateToRefresh +
+//           " ON MONGODB DATABASE."
+//       );
+//       Game.findOneAndUpdate(
+//         { date: req.params.date },
+//         {
+//           username: req.params.date,
+//           gameDetails: JSON.stringify(response.data),
+//         },
+//         function (err, foundGames) {
+//           if (err) {
+//             // console.log(err);
+//           } else {
+//             if (foundGames) {
+//               // console.log(foundGames);
+//               // console.log(gamesArrayYesterday);
+//             }
+//           }
+//         }
+//       );
+//     })
+//     .catch(function (error) {
+//       console.error(error);
+//     });
+// }
