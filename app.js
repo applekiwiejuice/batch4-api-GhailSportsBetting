@@ -332,68 +332,68 @@ const gameUpdate = {
 
 //END NBA-API
 
-// //ODDS-API
+// // //ODDS-API
 
-const api_key = process.env.ODDS_API;
+// const api_key = process.env.ODDS_API;
 
-Game.find({ date: currentYearMonthDay }, function (err, data) {
-  const [game] = data;
-  const { _id, date, gameDetails, listOfGames } = game;
-  //If list of games is empty, it will fetch from ODDS-API
-  if (listOfGames === null) {
-    axios
-      .get("https://api.the-odds-api.com/v3/odds/", {
-        params: {
-          api_key: api_key,
-          sport: "basketball_nba",
-          region: "us",
-          mkt: "h2h",
-          oddsFormat: "decimal",
-          dateFormat: "iso",
-        },
-      })
-      .then((response) => {
-        console.log(`Successfully got ${response.data.data.length} sports.`);
-        console.log(response.data.data);
-        Game.findOneAndUpdate(
-          { date: currentYearMonthDay },
-          {
-            listOfGames: JSON.stringify(response.data.data),
-          },
-          function (err, foundGames) {
-            if (err) {
-              console.log(err);
-            } else {
-              if (foundGames) {
-                console.log(
-                  "Updated Games for " +
-                    currentYearMonthDay +
-                    " with Odds from ODDS-API"
-                );
-                console.log(foundGames);
-              }
-            }
-          }
-        );
-        console.log(
-          "Remaining requests",
-          response.headers["x-requests-remaining"]
-        );
-        console.log("Used requests", response.headers["x-requests-used"]);
-      })
-      .catch((error) => {
-        console.log("Error status", error.response.status);
-        console.log(error.response.data);
-      });
-  } else {
-    console.log(
-      "DID NOT FETCH FROM ODDS-API -" +
-        "listOfGames for today " +
-        currentYearMonthDay +
-        " is already saved"
-    );
-  }
-});
+// Game.find({ date: currentYearMonthDay }, function (err, data) {
+//   const [game] = data;
+//   const { _id, date, gameDetails, listOfGames } = game;
+//   //If list of games is empty, it will fetch from ODDS-API
+//   if (listOfGames === null) {
+//     axios
+//       .get("https://api.the-odds-api.com/v3/odds/", {
+//         params: {
+//           api_key: api_key,
+//           sport: "basketball_nba",
+//           region: "us",
+//           mkt: "h2h",
+//           oddsFormat: "decimal",
+//           dateFormat: "iso",
+//         },
+//       })
+//       .then((response) => {
+//         console.log(`Successfully got ${response.data.data.length} sports.`);
+//         console.log(response.data.data);
+//         Game.findOneAndUpdate(
+//           { date: currentYearMonthDay },
+//           {
+//             listOfGames: JSON.stringify(response.data.data),
+//           },
+//           function (err, foundGames) {
+//             if (err) {
+//               console.log(err);
+//             } else {
+//               if (foundGames) {
+//                 console.log(
+//                   "Updated Games for " +
+//                     currentYearMonthDay +
+//                     " with Odds from ODDS-API"
+//                 );
+//                 console.log(foundGames);
+//               }
+//             }
+//           }
+//         );
+//         console.log(
+//           "Remaining requests",
+//           response.headers["x-requests-remaining"]
+//         );
+//         console.log("Used requests", response.headers["x-requests-used"]);
+//       })
+//       .catch((error) => {
+//         console.log("Error status", error.response.status);
+//         console.log(error.response.data);
+//       });
+//   } else {
+//     console.log(
+//       "DID NOT FETCH FROM ODDS-API -" +
+//         "listOfGames for today " +
+//         currentYearMonthDay +
+//         " is already saved"
+//     );
+//   }
+// });
 
 // END OF ODDS-API
 
@@ -472,55 +472,55 @@ Game.find({ date: currentYearMonthDay }, function (err, foundGames) {
   }
 });
 
-//GET ODDS FOR TODAY FROM DB AND STORE IN ARRAY oddsToday
-let oddsToday = [];
-Game.find({ date: currentYearMonthDay }, function (err, foundGames) {
-  if (err) {
-    console.log(err);
-  } else {
-    if (foundGames) {
-      const [game] = foundGames;
-      const { listOfGames } = game;
-      if (listOfGames === "") {
-        console.log("listOfGames empty");
-      } else {
-        const listOfGamesJSON = JSON.parse(listOfGames);
-        function GameOdds(homeTeam, awayOdds, homeOdds) {
-          this.homeTeam = homeTeam;
-          this.awayOdds = awayOdds;
-          this.homeOdds = homeOdds;
-        }
-        listOfGamesJSON.forEach((item) => {
-          console.log(item);
-          item.sites.map((items) => {
-            if (items.site_key === "williamhill_us") {
-              let extractedOdds = new GameOdds(
-                item.home_team,
-                items.odds.h2h[0],
-                items.odds.h2h[1]
-              );
-              oddsToday.push(extractedOdds);
-            }
-          });
-        });
-        console.log(oddsToday);
-        // THIS AREA IS STILL UNDERCONSTRUCTION
-        //Merging of Odds for today and Games for today
-        oddsToday.map((item) => {
-          // console.log("From Odds: " + item.homeTeam);
-          gamesArrayToday.map((items) => {
-            const { team2 } = items;
-            const { fullName } = team2;
-            // console.log("From Games: " + fullName);
-            if (item.homeTeam === fullName) {
-              // Problem with spelling (looking for a way to merge without conflicts)
-            }
-          });
-        });
-      }
-    }
-  }
-});
+// //GET ODDS FOR TODAY FROM DB AND STORE IN ARRAY oddsToday
+// let oddsToday = [];
+// Game.find({ date: currentYearMonthDay }, function (err, foundGames) {
+//   if (err) {
+//     console.log(err);
+//   } else {
+//     if (foundGames) {
+//       const [game] = foundGames;
+//       const { listOfGames } = game;
+//       if (listOfGames === "") {
+//         console.log("listOfGames empty");
+//       } else {
+//         const listOfGamesJSON = JSON.parse(listOfGames);
+//         function GameOdds(homeTeam, awayOdds, homeOdds) {
+//           this.homeTeam = homeTeam;
+//           this.awayOdds = awayOdds;
+//           this.homeOdds = homeOdds;
+//         }
+//         listOfGamesJSON.forEach((item) => {
+//           console.log(item);
+//           item.sites.map((items) => {
+//             if (items.site_key === "williamhill_us") {
+//               let extractedOdds = new GameOdds(
+//                 item.home_team,
+//                 items.odds.h2h[0],
+//                 items.odds.h2h[1]
+//               );
+//               oddsToday.push(extractedOdds);
+//             }
+//           });
+//         });
+//         console.log(oddsToday);
+//         // THIS AREA IS STILL UNDERCONSTRUCTION
+//         //Merging of Odds for today and Games for today
+//         oddsToday.map((item) => {
+//           // console.log("From Odds: " + item.homeTeam);
+//           gamesArrayToday.map((items) => {
+//             const { team2 } = items;
+//             const { fullName } = team2;
+//             // console.log("From Games: " + fullName);
+//             if (item.homeTeam === fullName) {
+//               // Problem with spelling (looking for a way to merge without conflicts)
+//             }
+//           });
+//         });
+//       }
+//     }
+//   }
+// });
 
 // GET GAMES FOR YESTERDAY FROM DB AND STORE IN ARRAY gamesArrayYesterday
 let gamesArrayYesterday = [];
