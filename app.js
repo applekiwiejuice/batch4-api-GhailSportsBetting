@@ -608,7 +608,7 @@ passport.use(
     {
       clientID: process.env.CLIENT_ID_G,
       clientSecret: process.env.CLIENT_SECRET_G,
-      callbackURL: "http://localhost:3000/auth/google/user",
+      callbackURL: "https://ghailsportsbetting.herokuapp.com/auth/google/user",
       userProfileURL: "https://www.googleapis.com/oauth2/v3/userinfo",
     },
     function (accessToken, refreshToken, profile, cb) {
